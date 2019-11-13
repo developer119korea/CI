@@ -13,6 +13,12 @@ public class ScriptBatch : ScriptableObject
     public static void BuildGame()
     {
         exportPath = Path.Combine(Environment.CurrentDirectory, "Build");
+        DirectoryInfo dirInfo = new DirectoryInfo(exportPath);
+        if(!dirInfo.Exists)
+        {
+            dirInfo.Create();
+        }
+
         string buildFileName = string.Format("{0}-v{1}-{2}-{3}.apk", Application.productName, Application.version, GetToDayString(), GetBuildOrderOfDay());
         string[] levels = FindEnabledEditorScenes();
         BuildReport report = BuildPipeline.BuildPlayer(levels, exportPath + "/" + buildFileName, BuildTarget.Android, BuildOptions.None);
