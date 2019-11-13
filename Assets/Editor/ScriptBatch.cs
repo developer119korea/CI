@@ -1,29 +1,21 @@
-﻿using UnityEditor;
-using System.Diagnostics;
+﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using UnityEditor;
+using UnityEditor.Build.Reporting;
+using UnityEngine;
 
-public class ScriptBatch
+public class ScriptBatch : ScriptableObject
 {
+    private static string exportPath = string.Empty;
+
     [MenuItem("MyTools/Android Build With Postprocess")]
     public static void BuildGame()
     {
-        // Get filename.
-        string path = EditorUtility.SaveFolderPanel("Choose Location of Built Game", "", "");
+        exportPath = Path.Combine(Environment.CurrentDirectory, "Build");
+        string buildFileName = string.Format("{0}-v{1}-{2}-{3}.apk", Application.productName, Application.version, GetToDayString(), GetBuildOrderOfDay());
         string[] levels = FindEnabledEditorScenes();
-
-        string buildExportName = string.Format("{0}.apk", UnityEngine.Application.productName);
-
-
-        // Build player.
-        BuildPipeline.BuildPlayer(levels, path + "/" + buildExportName, BuildTarget.Android, BuildOptions.None);
-
-        // Copy a file from the project folder to the build folder, alongside the built game.
-        //FileUtil.CopyFileOrDirectory("Assets/WebPlayerTemplates/Readme.txt", path + "Readme.txt");
-
-        // Run the game (Process class from System.Diagnostics).
-        Process proc = new Process();
-        proc.StartInfo.FileName = path + buildExportName;
-        proc.Start();
+        BuildReport report = BuildPipeline.BuildPlayer(levels, exportPath + "/" + buildFileName, BuildTarget.Android, BuildOptions.None);
     }
 
     private static string[] FindEnabledEditorScenes()
@@ -37,5 +29,27 @@ public class ScriptBatch
         }
 
         return EditorScenes.ToArray();
+    }
+
+    private static int GetBuildOrderOfDay()
+    {
+        DirectoryInfo di = new DirectoryInfo(exportPath);
+        FileInfo[] fis = di.GetFiles("*.apk");
+        string searchPattern = GetToDayString();
+        int orderCount = 1;
+        foreach (FileInfo fi in fis)
+        {
+            if (fi.Name.Contains(searchPattern))
+            {
+                orderCount++;
+            }
+        }
+        return orderCount;
+    }
+
+    private static string GetToDayString()
+    {
+        DateTime today = DateTime.Now;
+        return string.Format("{0:yyMMdd}", today);
     }
 }
