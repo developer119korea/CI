@@ -12,9 +12,9 @@ public class ScriptBatch : ScriptableObject
     [MenuItem("MyTools/Android Build With Postprocess")]
     public static void BuildGame()
     {
-        exportPath = Path.Combine(Environment.CurrentDirectory, "Build");
+        exportPath = "D:/Build";// Path.Combine(Environment.CurrentDirectory, "Build");
         DirectoryInfo dirInfo = new DirectoryInfo(exportPath);
-        if(!dirInfo.Exists)
+        if (!dirInfo.Exists)
         {
             dirInfo.Create();
         }
