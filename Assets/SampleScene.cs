@@ -7,6 +7,6 @@ public class SampleScene : MonoBehaviour
 
     private void Start()
     {
-        _text_.text = "자동 빌드2";
+        _text_.text = "자동 빌드3";
     }
 }
