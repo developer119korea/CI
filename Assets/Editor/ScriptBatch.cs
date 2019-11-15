@@ -12,7 +12,12 @@ public class ScriptBatch : ScriptableObject
     [MenuItem("MyTools/Android Build With Postprocess")]
     public static void BuildGame()
     {
-        exportPath = "D:/Build";// Path.Combine(Environment.CurrentDirectory, "Build");
+        exportPath = GetArg("-exportPath");
+        if(string.IsNullOrEmpty(exportPath))
+        {
+            exportPath = Path.Combine(Environment.CurrentDirectory, "Build");
+        }
+
         DirectoryInfo dirInfo = new DirectoryInfo(exportPath);
         if (!dirInfo.Exists)
         {
@@ -57,5 +62,19 @@ public class ScriptBatch : ScriptableObject
     {
         DateTime today = DateTime.Now;
         return string.Format("{0:yyMMdd}", today);
+    }
+
+    private static string GetArg(string name)
+    {
+        var args = Environment.GetCommandLineArgs();
+
+        for (int i = 0; i < args.Length; i++)
+        {
+            if (args[i] == name && args.Length > i + 1)
+            {
+                return args[i + 1];
+            }
+        }
+        return null;
     }
 }
